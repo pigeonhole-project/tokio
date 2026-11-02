@@ -29,6 +29,7 @@ config = "spellcheck.toml"
 unexpected_cfgs = { level = "warn", check-cfg = [
   'cfg(fuzzing)',
   'cfg(loom)',
+  'cfg(madsim)',
   'cfg(mio_unsupported_force_poll_poll)',
   'cfg(tokio_allow_from_blocking_fd)',
   'cfg(tokio_internal_mt_counters)',

@@ -32,15 +32,25 @@ pub(crate) mod hint {
 pub(crate) mod rand {
     use std::collections::hash_map::RandomState;
     use std::hash::{BuildHasher, Hash, Hasher};
+    #[cfg(not(madsim))]
     use std::sync::atomic::AtomicU32;
+    #[cfg(not(madsim))]
     use std::sync::atomic::Ordering::Relaxed;
 
+    #[cfg(not(madsim))]
     static COUNTER: AtomicU32 = AtomicU32::new(1);
 
     pub(crate) fn seed() -> u64 {
         let rand_state = RandomState::new();
+        // Under madsim, `RandomState` is seeded by the simulation; a
+        // process-wide counter is not, and would change a thread's seed from
+        // one run of a simulation to the next.
+        #[cfg(madsim)]
+        let n = 0u32;
         // Hash some unique-ish data to generate some new state
-        rand_state.hash_one(COUNTER.fetch_add(1, Relaxed))
+        #[cfg(not(madsim))]
+        let n = COUNTER.fetch_add(1, Relaxed);
+        rand_state.hash_one(n)
     }
 }
 
